@@ -18,8 +18,8 @@ struct CityWeatherViewModel {
         return cityViewModel.weatherState
     }
     
-    var cityWeatherIcon : UIImage {
-        return cityViewModel.weatherIcon
+    var cityWeatherAbbreviation : String {
+        return cityViewModel.weatherStateAbbreviation
     }
     
     
