@@ -11,6 +11,7 @@ class WeatherDetailsViewController: UIViewController {
     
     //MARK: - IBOutlets
     @IBOutlet weak var cityNameLabel: UILabel!
+    @IBOutlet weak var tableView: UITableView!
     
     //MARK: - State func
     override func viewDidLoad() {

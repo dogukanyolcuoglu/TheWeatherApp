@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct City {
+struct Weather : Decodable {
     
     let weatherState : String
     let weatherStateAbbreviation : String

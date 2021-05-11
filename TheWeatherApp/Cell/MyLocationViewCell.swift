@@ -8,7 +8,7 @@
 import UIKit
 import MapKit
 
-class MyLocationViewCell: UITableViewCell {
+class MyLocationViewCell: UITableViewCell , CLLocationManagerDelegate {
     //MARK: - IBOutlets
     @IBOutlet weak var mapView: MKMapView!
     
@@ -24,5 +24,4 @@ class MyLocationViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
 }
