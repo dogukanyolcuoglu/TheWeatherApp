@@ -6,11 +6,10 @@
 //
 
 import Foundation
-import UIKit
 
 struct Weather : Decodable {
     
-    let weatherState : String
-    let weatherStateAbbreviation : String
+    let weather_state_name : String
+    let weather_state_abbr : String
     
 }

@@ -13,11 +13,11 @@ struct WeatherViewModel {
     let weatherViewModel : Weather
     
     var weatherState : String {
-        return weatherViewModel.weatherState
+        return weatherViewModel.weather_state_name
     }
     
     var weatherAbbreviation : String {
-        return weatherViewModel.weatherStateAbbreviation
+        return weatherViewModel.weather_state_abbr
     }
     
 }

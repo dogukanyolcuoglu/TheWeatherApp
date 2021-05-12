@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct APIService {
+struct CityService {
     
     func downloadCities(url: URL, completion: @escaping ([City]?) -> Void ) {
         
@@ -21,9 +21,7 @@ struct APIService {
             } else if let data = data {
                 
                 let cityList = try? JSONDecoder().decode([City].self, from: data)
-                
-                //print(cityList)
-                
+  
                 if let cityList = cityList {
                     
                     completion(cityList)
@@ -31,7 +29,28 @@ struct APIService {
             }
         }.resume()
     }
-    
-    
-    
+}
+
+struct WeatherService {
+    func downloadWeathers(url: URL, completion: @escaping ([Weather]?) -> Void ) {
+        
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            
+            if let error = error {
+                print(error.localizedDescription)
+                completion(nil)
+                
+            } else if let data = data {
+            
+                
+                let weatherList = try? JSONDecoder().decode([Weather].self, from: data)
+                
+                
+                if let weatherList = weatherList {
+                    
+                    completion(weatherList)
+                }
+            }
+        }.resume()
+    }
 }

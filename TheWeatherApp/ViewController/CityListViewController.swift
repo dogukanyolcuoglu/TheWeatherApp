@@ -9,36 +9,34 @@ import UIKit
 import CoreLocation
 import MapKit
 
-class CityListViewController: UIViewController , UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
+class CityListViewController: UIViewController , UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, MKMapViewDelegate {
 
     //MARK: - Variables
-    let rowTitle = ["My Location","Nearby city list"]
+    let rowTitle = "Nearby city list"
+    var chosenCity = ""
+    var chosenWoeid = 0
     let locationManager = CLLocationManager()
-    var span = MKCoordinateSpan()
-    var region = MKCoordinateRegion()
-    
-    var latitude : Double = 0.0
-    var longitude : Double = 0.0
     
     var cityListViewModel : CityListViewModel!
     
     //MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var mapView: MKMapView!
     
     //MARK: - State func
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        mapView.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
-        self.tableView.tableFooterView = UIView()
         userLocation()
-        cityService()
+        self.tableView.tableFooterView = UIView()
     }
     
     //MARK: - TableView Delegate
     func numberOfSections(in tableView: UITableView) -> Int {
-        return rowTitle.count
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -46,37 +44,42 @@ class CityListViewController: UIViewController , UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "locationCell") as! MyLocationViewCell
-            
-            cell.mapView.setRegion(region, animated: true)
-            cell.mapView.showsUserLocation = true
-            
-            return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cityCell") as! CityListViewCell
-            
-            let cityViewModel = cityListViewModel.cityAtIndex(indexPath.row)
-            cell.cityName.text = cityViewModel.cityName
-     
-            return cell
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cityCell") as! CityListViewCell
+        
+        let cityViewModel = cityListViewModel.cityAtIndex(indexPath.row)
+        cell.cityNameLabel.text = cityViewModel.cityName
+ 
+        return cell
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return rowTitle[section]
+        return rowTitle
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cityViewModel = cityListViewModel.cityAtIndex(indexPath.row)
+        chosenCity = cityViewModel.cityName
+        chosenWoeid = cityViewModel.cityWoeid
         performSegue(withIdentifier: "toDetails", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toDetails" {
+            
+            let destination = segue.destination as! WeatherDetailsViewController
+            destination.selectedCity = chosenCity
+            destination.selectedWoeid = chosenWoeid
+        
+        }
     }
     
     //MARK: - Service func
     
-    func cityService() {
+    func cityService(latitude: Double , longitude: Double) {
+    
         let url = URL(string: "https://www.metaweather.com/api/location/search/?lattlong=\(latitude),\(longitude)")!
         
-        APIService().downloadCities(url: url) { (cities) in
+        CityService().downloadCities(url: url) { (cities) in
             
             if let cities = cities {
                 
@@ -94,13 +97,19 @@ class CityListViewController: UIViewController , UITableViewDelegate, UITableVie
    //MARK: - Location delegate methods
     
    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-       let userLocation :CLLocation = locations[0] as CLLocation
-        latitude = userLocation.coordinate.latitude
-        longitude = userLocation.coordinate.longitude
         
-        span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        region = MKCoordinateRegion(center: userLocation.coordinate, span: span)
-        
+    let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)
+    
+    let latitude = location.latitude
+    let longitude = location.longitude
+    
+    cityService(latitude: latitude, longitude: longitude)
+    
+    let span = MKCoordinateSpan(latitudeDelta: 0.035, longitudeDelta: 0.035)
+    let region = MKCoordinateRegion(center: location, span: span)
+    
+    mapView.setRegion(region, animated: true)
+
    }
     
    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -113,7 +122,7 @@ class CityListViewController: UIViewController , UITableViewDelegate, UITableVie
         locationManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
             locationManager.startUpdatingLocation()
         }
         

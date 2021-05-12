@@ -10,9 +10,8 @@ import UIKit
 class CityListViewCell: UITableViewCell {
     
     //MARK: - IBOutlets
-    
-    @IBOutlet weak var cityName: UILabel!
-    @IBOutlet weak var lattlongLabel: UILabel!
+
+    @IBOutlet weak var cityNameLabel: UILabel!
     
     
     //MARK: - State func

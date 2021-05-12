@@ -14,8 +14,6 @@ class WeatherListViewCell: UITableViewCell {
     @IBOutlet weak var weatherStateLabel: UILabel!
     @IBOutlet weak var imageview: UIImageView!
     
-    
-    
     //MARK: - State func
     override func awakeFromNib() {
         super.awakeFromNib()
