@@ -27,7 +27,7 @@ struct WeatherListViewModel {
     let weatherListViewModel : [Weather]
     
     func numberRowInSection () -> Int {
-        return weatherListViewModel.count
+        return 7
     }
     
     func weatherAtIndex(_ index : Int) -> WeatherViewModel {
